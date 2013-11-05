@@ -1,0 +1,33 @@
+[CLangCompiler]
+SOURCES=./src/kad.c
+        OBJDIR=./obj/
+INCLUDE=./src;./extrn/common-code
+KEYS=-fshort-wchar -fPIC -fpack-struct=1
+Debug:
+KEYS=-ggdb
+Verbose:
+DEFINE=CONFIG_VERBOSE
+Profile:
+DEFINE=EXIT_TIMER
+Daemon:
+DEFINE=RUN_AS_DAEMON
+[CLangLinker]
+TARGETNAME=kad
+TARGETDIR=./bin/
+KEYS= -L./bin
+Shared:
+LIBS= c rt kad event_core event_extra
+Static:
+LIBS=c rt kad event_core event_extra
+
+[Cleaner]
+DIRS=./;./obj/
+EXTS=*.o;*.dat
+
+Build >> [CLangCompiler,CLangLinker]
+Clean >> [Cleaner]
+
+BuildTest == [Build Debug Verbose Shared]
+BuildSend == [Build Release Static Daemon]
+BuildTestDaemon == [Build Debug Shared Daemon]
+default == [Build Debug Verbose Shared]
