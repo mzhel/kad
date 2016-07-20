@@ -1,0 +1,9 @@
+[submodule "extrn/common-code"]
+	path = extrn/common-code
+	url = https://github.com/mzhel/common-code
+[submodule "extrn/zlib"]
+	path = extrn/zlib
+	url = https://github.com/madler/zlib
+[submodule "extrn/polarssl"]
+	path = extrn/polarssl
+	url = https://github.com/polarssl/polarssl.git

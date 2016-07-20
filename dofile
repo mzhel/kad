@@ -1,8 +1,32 @@
 [CLangCompiler]
-SOURCES=./src/kad.c
-        OBJDIR=./obj/
-INCLUDE=./src;./extrn/common-code
+SOURCES=./src/kad.c \
+        ./extrn/common-code/log.c \
+        ./extrn/common-code/mem.c \
+        ./extrn/zlib/compress.c \
+        ./extrn/zlib/uncompr.c \
+        ./extrn/zlib/gzclose.c \
+        ./extrn/zlib/gzlib.c \
+        ./extrn/zlib/gzread.c \
+        ./extrn/zlib/gzwrite.c \
+        ./extrn/zlib/adler32.c \
+        ./extrn/zlib/crc32.c \
+        ./extrn/zlib/deflate.c \
+        ./extrn/zlib/infback.c \
+        ./extrn/zlib/inffast.c \
+        ./extrn/zlib/inflate.c \
+        ./extrn/zlib/inftrees.c \
+        ./extrn/zlib/trees.c \
+        ./extrn/zlib/zutil.c \
+        ./extrn/polarssl/library/havege.c \
+        ./extrn/polarssl/library/timing.c \
+        ./extrn/polarssl/library/md4.c \
+        ./extrn/polarssl/library/md5.c \
+        ./extrn/polarssl/library/arc4.c 
+
+OBJDIR=./obj/
+INCLUDE=./src;./extrn/common-code;./extrn/zlib;./extrn/polarssl/include
 KEYS=-fshort-wchar -fPIC -fpack-struct=1
+DEFINE=POLARSSL_HAVEGE_C POLARSSL_MD4_C
 Debug:
 KEYS=-ggdb
 Verbose:
@@ -14,11 +38,13 @@ DEFINE=RUN_AS_DAEMON
 [CLangLinker]
 TARGETNAME=kad
 TARGETDIR=./bin/
-KEYS= -L./bin
 Shared:
 LIBS= c rt kad event_core event_extra
 Static:
-LIBS=c rt kad event_core event_extra
+LIBS=c rt event_core event_extra
+STATIC_LIBS=./lib/libkad.a ./lib/libmule.a
+#Profile:
+#LIBS=profiler
 
 [Cleaner]
 DIRS=./;./obj/
@@ -26,8 +52,11 @@ EXTS=*.o;*.dat
 
 Build >> [CLangCompiler,CLangLinker]
 Clean >> [Cleaner]
+Rebuild >> [Cleaner,CLangCompiler,CLangLinker]
 
-BuildTest == [Build Debug Verbose Shared]
-BuildSend == [Build Release Static Daemon]
-BuildTestDaemon == [Build Debug Shared Daemon]
-default == [Build Debug Verbose Shared]
+rb == [Rebuild Debug Verbose Static]
+default == [Build Debug Verbose Static]
+profile == [Build Debug Verbose Static Profile]
+rbprof == [Rebuild Debug Verbose Static Profile]
+rbhushprof == [Rebuild Debug Static Profile]
+
